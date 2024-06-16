@@ -16,7 +16,7 @@ def print_stats():
     methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     for method in methods:
         count = db.nginx.count_documents({"method": method})
-        print(" method {}: {}".format(method, count))
+        print("	method {}: {}".format(method, count))
     print("{} status check".format(db.nginx.count_documents(
         {"method": "GET", "path": '/status'}
     )))
