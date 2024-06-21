@@ -7,8 +7,10 @@ import functools
 
 
 def count_calls(method: Callable) -> Callable:
+    """ count_calls decorator """
     @functools.wraps(method)
     def wrapper(*args, **kargs):
+        """ wrapper function """
         self = args[0]
         client = self._redis
         client.incr(method.__qualname__, 1)
