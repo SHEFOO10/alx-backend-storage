@@ -21,13 +21,14 @@ def call_history(method: Callable) -> Callable:
      a decorator to store the history of inputs
      and outputs for a particular function.
     """
+    key = method.__qualname__
+    inputs = key + ':inputs'
+    outputs = key + ':outputs'
+
     @functools.wraps(method)
     def wrapper(self, *args, **kargs):
-        key = method.__qualname__
-        inputs = key + ':inputs'
-        outputs = key + ':outputs'
         self._redis.rpush(inputs, str(args))
-        self._redis.rpush(outputs, method(self, *args))
+        self._redis.rpush(outputs, method(self, *args, **kargs))
     return wrapper
 
 
