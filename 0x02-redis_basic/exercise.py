@@ -73,3 +73,24 @@ class Cache:
     def get_str(self, data: bytes) -> str:
         """Converts data from bytes to str."""
         return data.decode('utf-8')
+
+
+def replay(method: Callable) -> None:
+    """
+    display the history of calls of a particular function.
+    """
+    key = method.__qualname__
+    client = redis.Redis()
+    inputs = key + ':inputs'
+    outputs = key + ':outputs'
+    calls = client.llen(inputs)
+    print('{} was called {} times:'.format(key, calls))
+    for method_inputs, output in zip
+    (
+        client.lrange(inputs, 0, -1),
+        client.lrange(outputs, 0, -1)
+    ):
+        print("{}(*{}) -> {}".format(
+            key,
+            method_inputs.decode('UTF-8'),
+            output.decode('UTF-8')))
