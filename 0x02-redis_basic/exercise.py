@@ -7,14 +7,13 @@ import functools
 
 
 def count_calls(method: Callable) -> Callable:
-    """ count_calls decorator """
+    """Decorator to count calls to a method."""
     @functools.wraps(method)
-    def wrapper(*args, **kargs):
-        """ wrapper function """
+    def wrapper(*args, **kwargs):
         self = args[0]
         client = self._redis
-        client.incr(method.__qualname__, 1)
-        return method(*args, **kargs)
+        client.incr(method.__qualname__)
+        return method(*args, **kwargs)
     return wrapper
 
 
@@ -27,7 +26,7 @@ class Cache:
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
-        store the input data in Redis using the random key
+        Store the input data in Redis using a random key
         and return the key
         """
         key = str(uuid.uuid4())
@@ -36,12 +35,11 @@ class Cache:
 
     def get(self, key: str, fn: Optional[Callable] = None) -> Any:
         """
-        get data from redis
+        Get data from Redis and optionally apply a transformation function.
         """
-        client = self._redis
-        value = client.get(key)
-        if not value:
-            return
+        value = self._redis.get(key)
+        if value is None:
+            return None
         if fn is int:
             return self.get_int(value)
         if fn is str:
@@ -51,8 +49,9 @@ class Cache:
         return value
 
     def get_int(self, data: bytes) -> int:
-        """ converts data from bytes to int """
+        """Converts data from bytes to int."""
         return int(data)
 
     def get_str(self, data: bytes) -> str:
-        return data.decode('UTF-8')
+        """Converts data from bytes to str."""
+        return data.decode('utf-8')
