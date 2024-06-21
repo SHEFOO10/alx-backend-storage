@@ -83,7 +83,7 @@ def replay(method: Callable) -> None:
     client = redis.Redis()
     inputs = client.lrange(key + ':inputs', 0, -1)
     outputs = client.lrange(key + ':outputs', 0, -1)
-    calls = client.get(key)
+    calls = client.get(key).decode('UTF-8')
 
     print('{} was called {} times:'.format(key, calls))
     for method_inputs, output in zip(inputs, outputs):
